@@ -18,16 +18,20 @@ export function IroHandle(props: IroHandleProps) {
   const cx = radius;
   const cy = radius;
 
-  return (
-    <svg 
-      className={`IroHandle IroHandle--${props.index} ${props.isActive ? 'IroHandle--isActive' : ''}`}
-      style={{
-        transform: `translate(${ cssValue(props.x) }, ${ cssValue(props.y) })`,
-        willChange: 'transform',
+  const sizePos = url ? {} : {
         top: cssValue(-radius),
         left: cssValue(-radius),
         width: cssValue(radius * 2),
         height: cssValue(radius * 2),
+  };
+
+  return (
+    <svg
+      className={`IroHandle IroHandle--${props.index} ${props.isActive ? 'IroHandle--isActive' : ''}`}
+      style={{
+        ...sizePos,
+        transform: `translate(${ cssValue(props.x) }, ${ cssValue(props.y) })`,
+        willChange: 'transform',
         position: 'absolute',
         overflow: 'visible'
       }}
@@ -46,11 +50,11 @@ export function IroHandle(props: IroHandleProps) {
         />
       )}
       {!url && (
-        <circle 
+        <circle
           cx={ cx }
           cy={ cy }
           r={ radius - 2 }
-          fill={ props.fill } 
+          fill={ props.fill }
           stroke-width={ 2 }
           stroke="#fff"
         />

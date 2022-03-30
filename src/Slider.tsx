@@ -4,9 +4,9 @@ import {
   SliderShape,
   SliderType,
   sliderDefaultOptions,
-  getSliderDimensions, 
-  getSliderValueFromInput, 
-  getSliderHandlePosition, 
+  getSliderDimensions,
+  getSliderValueFromInput,
+  getSliderHandlePosition,
   getSliderGradient,
   cssBorderStyles,
   cssGradient,
@@ -20,6 +20,7 @@ import { IroHandle } from './Handle';
 interface IroSliderProps extends IroComponentProps {
   sliderType: SliderType;
   sliderShape: SliderShape;
+  shapeRadius: number;
   minTemperature: number;
   maxTemperature: number;
 };
@@ -44,7 +45,7 @@ export function IroSlider(props: IroSliderProps) {
         <div
           { ...rootProps }
           className="IroSlider"
-          style={{ 
+          style={{
             position: 'relative',
             width: cssValue(width),
             height: cssValue(height),
@@ -65,7 +66,7 @@ export function IroSlider(props: IroSliderProps) {
               height: `100%`,
               borderRadius: cssValue(radius),
               background: cssGradient(
-                'linear', 
+                'linear',
                 props.layoutDirection === 'horizontal' ? 'to top' : 'to right',
                 gradient
               ),

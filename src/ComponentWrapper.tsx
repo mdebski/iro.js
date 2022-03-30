@@ -46,9 +46,11 @@ export class IroComponentWrapper extends Component<Props, State> {
     const margin = props.margin === null ? props.sliderMargin : props.margin;
 
     const rootStyles = {
-      overflow: 'visible',
+      overflow: 'hidden',
       display: isHorizontal ? 'inline-block' : 'block'
+      position: 'relative',
     };
+    rootStyles["z-index"] = 0;
 
     // first component shouldn't have any margin
     if (props.index > 0) {
