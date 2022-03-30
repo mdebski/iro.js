@@ -47,7 +47,7 @@ export class IroComponentWrapper extends Component<Props, State> {
 
     const rootStyles = {
       overflow: 'hidden',
-      display: isHorizontal ? 'inline-block' : 'block'
+      display: isHorizontal ? 'inline-block' : 'block',
       position: 'relative',
     };
     rootStyles["z-index"] = 0;

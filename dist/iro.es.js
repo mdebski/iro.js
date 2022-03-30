@@ -20,6 +20,9 @@ function _defineProperties(target, props) {
 function _createClass(Constructor, protoProps, staticProps) {
   if (protoProps) { _defineProperties(Constructor.prototype, protoProps); }
   if (staticProps) { _defineProperties(Constructor, staticProps); }
+  Object.defineProperty(Constructor, "prototype", {
+    writable: false
+  });
   return Constructor;
 }
 
@@ -118,9 +121,7 @@ function intToHex(_int) {
   return _int.toString(16).padStart(2, '0');
 }
 
-var IroColor =
-/*#__PURE__*/
-function () {
+var IroColor = /*#__PURE__*/function () {
   /**
     * @constructor Color object
     * @param value - initial color value
@@ -711,6 +712,7 @@ function getSliderDimensions(props) {
 
   var width = props.width,
       sliderSize = props.sliderSize,
+      shapeRadius = props.shapeRadius,
       borderWidth = props.borderWidth,
       handleRadius = props.handleRadius,
       padding = props.padding,
@@ -720,6 +722,9 @@ function getSliderDimensions(props) {
   sliderSize = (_sliderSize = sliderSize) != null ? _sliderSize : padding * 2 + handleRadius * 2;
 
   if (sliderShape === 'circle') {
+    var _shapeRadius;
+
+    shapeRadius = (_shapeRadius = shapeRadius) != null ? _shapeRadius : width / 2 - borderWidth / 2;
     return {
       handleStart: props.padding + props.handleRadius,
       handleRange: width - padding * 2 - handleRadius * 2,
@@ -727,13 +732,31 @@ function getSliderDimensions(props) {
       height: width,
       cx: width / 2,
       cy: width / 2,
-      radius: width / 2 - borderWidth / 2
+      radius: shapeRadius
+    };
+  }
+
+  if (sliderShape === 'flat') {
+    var _shapeRadius2;
+
+    shapeRadius = (_shapeRadius2 = shapeRadius) != null ? _shapeRadius2 : sliderSize / 2;
+    return {
+      handleStart: 0,
+      handleRange: width,
+      radius: shapeRadius,
+      x: 0,
+      y: 0,
+      width: ishorizontal ? sliderSize : width,
+      height: ishorizontal ? width : sliderSize
     };
   } else {
+    var _shapeRadius3;
+
+    shapeRadius = (_shapeRadius3 = shapeRadius) != null ? _shapeRadius3 : sliderSize / 2;
     return {
-      handleStart: sliderSize / 2,
-      handleRange: width - sliderSize,
-      radius: sliderSize / 2,
+      handleStart: shapeRadius,
+      handleRange: width - 2 * shapeRadius,
+      radius: shapeRadius,
       x: 0,
       y: 0,
       width: ishorizontal ? sliderSize : width,
@@ -866,61 +889,75 @@ function getSliderGradient(props, color) {
   var hsv = color.hsv;
   var rgb = color.rgb;
 
-  switch (props.sliderType) {
-    case 'red':
-      return [[0, "rgb(" + 0 + "," + rgb.g + "," + rgb.b + ")"], [100, "rgb(" + 255 + "," + rgb.g + "," + rgb.b + ")"]];
+  if (props.sliderShape == 'flat') {
+    switch (props.sliderType) {
+      case 'value':
+      default:
+        var hsl = IroColor.hsvToHsl({
+          h: hsv.h,
+          s: hsv.s,
+          v: 100
+        });
+        return [[0, "hsl(" + hsl.h + "," + hsl.s + "%," + hsl.l + "%)"], [100, "hsl(" + hsl.h + "," + hsl.s + "%," + hsl.l + "%)"]];
+    }
+  } else {
+    switch (props.sliderType) {
+      case 'red':
+        return [[0, "rgb(" + 0 + "," + rgb.g + "," + rgb.b + ")"], [100, "rgb(" + 255 + "," + rgb.g + "," + rgb.b + ")"]];
 
-    case 'green':
-      return [[0, "rgb(" + rgb.r + "," + 0 + "," + rgb.b + ")"], [100, "rgb(" + rgb.r + "," + 255 + "," + rgb.b + ")"]];
+      case 'green':
+        return [[0, "rgb(" + rgb.r + "," + 0 + "," + rgb.b + ")"], [100, "rgb(" + rgb.r + "," + 255 + "," + rgb.b + ")"]];
 
-    case 'blue':
-      return [[0, "rgb(" + rgb.r + "," + rgb.g + "," + 0 + ")"], [100, "rgb(" + rgb.r + "," + rgb.g + "," + 255 + ")"]];
+      case 'blue':
+        return [[0, "rgb(" + rgb.r + "," + rgb.g + "," + 0 + ")"], [100, "rgb(" + rgb.r + "," + rgb.g + "," + 255 + ")"]];
 
-    case 'alpha':
-      return [[0, "rgba(" + rgb.r + "," + rgb.g + "," + rgb.b + ",0)"], [100, "rgb(" + rgb.r + "," + rgb.g + "," + rgb.b + ")"]];
+      case 'alpha':
+        return [[0, "rgba(" + rgb.r + "," + rgb.g + "," + rgb.b + ",0)"], [100, "rgb(" + rgb.r + "," + rgb.g + "," + rgb.b + ")"]];
 
-    case 'kelvin':
-      var stops = [];
-      var min = props.minTemperature;
-      var max = props.maxTemperature;
-      var numStops = 8;
-      var range = max - min;
+      case 'kelvin':
+        var stops = [];
+        var min = props.minTemperature;
+        var max = props.maxTemperature;
+        var numStops = 8;
+        var range = max - min;
 
-      for (var kelvin = min, stop = 0; kelvin < max; kelvin += range / numStops, stop += 1) {
-        var _IroColor$kelvinToRgb = IroColor.kelvinToRgb(kelvin),
-            r = _IroColor$kelvinToRgb.r,
-            g = _IroColor$kelvinToRgb.g,
-            b = _IroColor$kelvinToRgb.b;
+        for (var kelvin = min, stop = 0; kelvin < max; kelvin += range / numStops, stop += 1) {
+          var _IroColor$kelvinToRgb = IroColor.kelvinToRgb(kelvin),
+              r = _IroColor$kelvinToRgb.r,
+              g = _IroColor$kelvinToRgb.g,
+              b = _IroColor$kelvinToRgb.b;
 
-        stops.push([100 / numStops * stop, "rgb(" + r + "," + g + "," + b + ")"]);
-      }
+          stops.push([100 / numStops * stop, "rgb(" + r + "," + g + "," + b + ")"]);
+        }
 
-      return stops;
+        return stops;
 
-    case 'hue':
-      return [[0, '#f00'], [16.666, '#ff0'], [33.333, '#0f0'], [50, '#0ff'], [66.666, '#00f'], [83.333, '#f0f'], [100, '#f00']];
+      case 'hue':
+        return [[0, '#f00'], [16.666, '#ff0'], [33.333, '#0f0'], [50, '#0ff'], [66.666, '#00f'], [83.333, '#f0f'], [100, '#f00']];
 
-    case 'saturation':
-      var noSat = IroColor.hsvToHsl({
-        h: hsv.h,
-        s: 0,
-        v: hsv.v
-      });
-      var fullSat = IroColor.hsvToHsl({
-        h: hsv.h,
-        s: 100,
-        v: hsv.v
-      });
-      return [[0, "hsl(" + noSat.h + "," + noSat.s + "%," + noSat.l + "%)"], [100, "hsl(" + fullSat.h + "," + fullSat.s + "%," + fullSat.l + "%)"]];
+      case 'saturation':
+        var noSat = IroColor.hsvToHsl({
+          h: hsv.h,
+          s: 0,
+          v: hsv.v
+        });
+        var fullSat = IroColor.hsvToHsl({
+          h: hsv.h,
+          s: 100,
+          v: hsv.v
+        });
+        return [[0, "hsl(" + noSat.h + "," + noSat.s + "%," + noSat.l + "%)"], [100, "hsl(" + fullSat.h + "," + fullSat.s + "%," + fullSat.l + "%)"]];
 
-    case 'value':
-    default:
-      var hsl = IroColor.hsvToHsl({
-        h: hsv.h,
-        s: hsv.s,
-        v: 100
-      });
-      return [[0, '#000'], [100, "hsl(" + hsl.h + "," + hsl.s + "%," + hsl.l + "%)"]];
+      case 'value':
+      default:
+        var _hsl = IroColor.hsvToHsl({
+          h: hsv.h,
+          s: hsv.s,
+          v: 100
+        });
+
+        return [[0, '#000'], [100, "hsl(" + _hsl.h + "," + _hsl.s + "%," + _hsl.l + "%)"]];
+    }
   }
 }
 
@@ -986,8 +1023,8 @@ function translateWheelAngle(props, angle, invert) {
 
   if (invert && wheelDirection === 'clockwise') { angle = wheelAngle + angle; } // clockwise (input handling)
   else if (wheelDirection === 'clockwise') { angle = 360 - wheelAngle + angle; } // inverted and anticlockwise
-    else if (invert && wheelDirection === 'anticlockwise') { angle = wheelAngle + 180 - angle; } // anticlockwise (input handling)
-      else if (wheelDirection === 'anticlockwise') { angle = wheelAngle - angle; }
+  else if (invert && wheelDirection === 'anticlockwise') { angle = wheelAngle + 180 - angle; } // anticlockwise (input handling)
+  else if (wheelDirection === 'anticlockwise') { angle = wheelAngle - angle; }
   return mod(angle, 360);
 }
 /**
