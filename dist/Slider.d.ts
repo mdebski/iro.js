@@ -4,6 +4,7 @@ import { IroComponentProps } from './ComponentTypes';
 interface IroSliderProps extends IroComponentProps {
     sliderType: SliderType;
     sliderShape: SliderShape;
+    shapeRadius: number;
     minTemperature: number;
     maxTemperature: number;
 }
